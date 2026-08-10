@@ -1,0 +1,13 @@
+{
+	"extends": "./.nuxt/tsconfig.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["src/*"],
+			"#runtime/*": ["src/runtime/*"]
+		}
+	},
+	"include": ["src"]
+}

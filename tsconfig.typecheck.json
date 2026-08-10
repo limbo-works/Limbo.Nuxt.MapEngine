@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		// The .nuxt-inherited baseUrl trips a hard deprecation error under
+		// plain `nuxi typecheck` on TS 6 — silence it for this check only
+		"ignoreDeprecations": "6.0"
+	},
+	"include": ["src", "test", "vitest.config.ts"]
+}
