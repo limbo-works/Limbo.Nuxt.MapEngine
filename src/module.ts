@@ -11,7 +11,11 @@ export type * from './runtime/types';
 
 // utils/ isn't auto-import-registered (only composables/ and components/
 // are), so these two helpers — genuinely useful outside the engine itself,
-// e.g. building a custom search UI — are re-exported explicitly here
+// e.g. building a custom search UI — are re-exported explicitly here.
+// `src/runtime` is external to the module build (mkdist compiles it
+// separately into dist/runtime/*.mjs) — build.config.cjs rewrites this
+// specifier to the .mjs-suffixed path in the published dist/module.mjs, so
+// it stays extensionless here for Bundler module resolution/typechecking.
 export { isPointInGroup } from './runtime/utils/points';
 export { normalizeSearchText } from './runtime/utils/search';
 

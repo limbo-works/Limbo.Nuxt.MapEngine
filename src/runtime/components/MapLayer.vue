@@ -169,11 +169,20 @@ function mountSprite(element: HTMLElement) {
 		.map(([key, value]) => `${key}="${value}"`)
 		.join(' ');
 
+	// Built via the DOM API rather than a template-literal HTML string
+	// containing a style element: mkdist's SFC block extraction (used by
+	// `nuxt-module-build build` when publishing) finds this component's
+	// style block with a plain regex over the raw file text, so a JS
+	// string literally spelling out an opening and closing style tag gets
+	// mistaken for the real one below and breaks the published build.
+	const style = document.createElement('style');
+	style.textContent = spriteStyles;
+
 	shadowRoot.innerHTML =
-		`<style>${spriteStyles}</style>` +
 		`<svg class="c-map-layer" overflow="hidden" preserveAspectRatio="xMidYMid slice" ${attributes}>` +
 		props.layer.sprite.children +
 		'</svg>';
+	shadowRoot.prepend(style);
 
 	sprite = shadowRoot.querySelector('svg');
 }
