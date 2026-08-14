@@ -38,54 +38,6 @@ export function withSetup<T>(setup: () => T): {
 	return { result: result!, wrapper };
 }
 
-/**
- * Dispatches a pointer event with a controlled timeStamp — the gesture
- * velocity tracking reads event.timeStamp, which is read-only on the
- * constructed event and has to be overridden per instance.
- */
-export function firePointer(
-	target: Element,
-	type: string,
-	options: {
-		pointerId?: number;
-		clientX?: number;
-		clientY?: number;
-		timeStamp?: number;
-	} = {}
-): void {
-	const event = new PointerEvent(type, {
-		bubbles: true,
-		cancelable: true,
-		pointerId: options.pointerId ?? 1,
-		clientX: options.clientX ?? 0,
-		clientY: options.clientY ?? 0,
-	});
-
-	if (options.timeStamp !== undefined) {
-		Object.defineProperty(event, 'timeStamp', {
-			value: options.timeStamp,
-		});
-	}
-
-	target.dispatchEvent(event);
-}
-
-export function fireGesture(
-	target: Element,
-	type: string,
-	options: { scale?: number; clientX?: number; clientY?: number } = {}
-): void {
-	const event = new Event(type, { bubbles: true, cancelable: true });
-
-	Object.assign(event, {
-		scale: options.scale ?? 1,
-		clientX: options.clientX ?? 0,
-		clientY: options.clientY ?? 0,
-	});
-
-	target.dispatchEvent(event);
-}
-
 export function svgSprite(width: number, height: number): string {
 	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}"/></svg>`;
 }

@@ -57,6 +57,12 @@ file wins for this repo.
   returning `reactive()` objects (this repo's documented convention —
   `reactive()` is otherwise reserved per the ruleset). `use<Name>` for
   state factories, `on<Name>` for lifecycle-registering helpers.
+    - `useMapGestures` deviates deliberately: it takes an `IViewport`
+      rather than an options object, and returns a **plain** object rather
+      than a `reactive()` one. It exposes event handlers and holds no
+      reactive state, so wrapping it in `reactive()` would buy nothing and
+      imply state that isn't there. Reach for `reactive()` by default;
+      this is the exception, not a new pattern.
 - Everything else: `function` declarations for helpers, handlers, and
   utilities — never module-level arrow consts. Arrows only for inline
   callbacks.

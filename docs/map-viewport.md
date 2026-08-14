@@ -6,24 +6,24 @@ of the public surface.
 
 ## Props
 
-| Prop     | Type      | Description                                                                              |
-| -------- | --------- | ---------------------------------------------------------------------------------------- |
-| `engine` | `IEngine` | Registers its element as the viewport's size reference (`viewport.setElement`) on mount. |
+| Prop       | Type        | Description                                                                                                                                     |
+| ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine`   | `IEngine`   | Registers its element as the viewport's size reference (`viewport.setElement`) on mount.                                                        |
+| `gestures` | `IGestures` | The recognizer, created by `<MapEngine>`. This component binds it and registers its element as the recognizer's measuring stick (`setElement`). |
 
 ## Gestures
 
-All input funnels into the shared `animateTo` path on `engine.viewport`:
+Gesture recognition itself lives in
+[`useMapGestures`](./use-map-gestures.md), not in this component — see
+there for pan/pinch/wheel/momentum behavior and the deferred pointer
+capture that keeps POI taps working.
 
-- **Drag** pans 1:1 (`duration: 0`); release adds a capped momentum glide
-  scaled by `IViewportOptions.momentum` (`0` disables it).
-- **Two-finger pinch** zooms geometrically around the midpoint — the world
-  point under the fingers stays under them, referenced to the gesture
-  start so tracking error can't compound.
-- **Wheel** zooms toward the cursor with a short ease;
-  **ctrl+wheel/trackpad pinch** tracks directly (`duration: 0`). Both are
-  scaled by `IViewportOptions.wheelSensitivity`.
-- **Safari trackpad pinches** arrive as proprietary GestureEvents and are
-  handled separately (deferring to pointer events when any are active).
+This component is one of two bind sites for that recognizer;
+[`<MapEngine>`](./map-engine.md) binds the same instance on the points
+overlay so gestures starting on a pin behave identically. It owns the
+recognizer's element: pointer positions are measured against
+`.c-map-viewport`'s bounding rect regardless of which element the event
+came from, since the two share their geometry exactly.
 
 ## CSS custom properties
 

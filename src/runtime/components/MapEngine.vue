@@ -1,6 +1,6 @@
 <template>
 	<div class="c-map-engine">
-		<MapViewport ref="viewport" :engine="engine">
+		<MapViewport :engine="engine" :gestures="gestures">
 			<div class="c-map-engine__layers">
 				<MapLayer
 					v-for="layer in engine.layers"
@@ -11,7 +11,7 @@
 			</div>
 		</MapViewport>
 
-		<div class="c-map-engine__points" @wheel.prevent="onPointsWheel">
+		<div class="c-map-engine__points" v-on="gestures.handlers">
 			<MapPoint
 				v-for="point in engine.points"
 				:key="point.id"
@@ -31,19 +31,19 @@
 </template>
 
 <script setup lang="ts">
-import { useTemplateRef } from 'vue';
+import useMapGestures from '../composables/useMapGestures';
 import type { IEngine } from '../types';
 
-defineProps<{ engine: IEngine }>();
+const props = defineProps<{ engine: IEngine }>();
 
-const viewport = useTemplateRef('viewport');
-
-// Re-enters the viewport's own wheel handling for a wheel event that
-// landed on the points overlay instead of the viewport itself — see the
-// comment on MapViewport's defineExpose.
-function onPointsWheel(event: WheelEvent) {
-	viewport.value?.onWheel(event);
-}
+// One recognizer drives both bind sites. The points overlay is a sibling of
+// the viewport rather than a descendant (so pins aren't double-transformed
+// by the viewport's CSS transform), so gestures starting on a pin never
+// reach the viewport's own bindings — binding the same handler set here is
+// what makes dragging, pinching, and scroll-to-zoom work over a POI. Both
+// sites must share one instance: a two-finger pinch can land one finger on
+// a pin and the other on bare map, and the recognizer tracks them together.
+const gestures = useMapGestures(props.engine.viewport);
 </script>
 
 <style>

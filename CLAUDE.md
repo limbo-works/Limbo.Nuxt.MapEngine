@@ -15,6 +15,10 @@ development and as the de facto integration example. It is not a shipped
 product surface — `playground/app.vue`'s demo buttons, sprite globbing, and
 scale-factor tables exist to exercise the engine, not to define its API.
 
+`CONTEXT.md` (repo root) is the domain glossary — what the nouns mean
+(viewport, recognizer, cover-fit, destination/origin, bare icons). Use
+those words in code, comments, and issues.
+
 Read `scope-of-work.md` (repo root) before starting any feature work —
 section numbers (e.g. §3.5) are referenced in GitHub issues and should be
 referenced in new ones too. It is the authoritative product spec; when SoW
@@ -28,11 +32,15 @@ Everything lives under `src/runtime/`:
   `useMapPoint`, `useMapGroup`, `useMapFloor`, `useMapSprite`, `useMapUrlSync`
   are plain factory functions returning `reactive()` objects (not classes,
   not Pinia, not `ref`-based composables in the usual Nuxt-project sense —
-  this module has its own conventions, see below). `onUpdate` is the shared
+  this module has its own conventions, see below). `useMapGestures` is the
+  one composable that breaks both halves of that pattern: it takes an
+  `IViewport` rather than an options object and returns a plain object of
+  event handlers, since it holds no reactive state. `onUpdate` is the shared
   `requestAnimationFrame` driver.
 - **`components/`** — `MapEngine.vue` (top-level, owns `engine.points` and
-  `engine.layers` rendering), `MapViewport.vue` (pointer/wheel gesture
-  handling, owns the pan/zoom transform), `MapLayer.vue`, `MapPoint.vue`.
+  `engine.layers` rendering, creates the gesture recognizer and binds it on
+  both input surfaces), `MapViewport.vue` (owns the pan/zoom transform and
+  the recognizer's measuring element), `MapLayer.vue`, `MapPoint.vue`.
   `MapContentOverlay.vue` is playground demo UI, not a runtime component —
   see "Selection" below.
 - **`types/`** — one file per concept (`engine.ts`, `viewport.ts`,
@@ -98,6 +106,30 @@ Per-component visual animation (e.g. the pin select/deselect motion in
 `playground/components/MapPointPin.vue`) is CSS-driven and separate from
 viewport animation — that's fine, they solve different problems (DOM
 element state vs. shared viewport transform).
+
+### Input
+
+All gesture recognition lives in `useMapGestures` — pan, pinch, wheel
+zoom, momentum, and Safari's proprietary GestureEvents. Its handlers are
+typed against structural inputs rather than DOM event classes, so they're
+callable with object literals; test it in `test/unit/useMapGestures.spec.ts`
+rather than by mounting a component and dispatching synthetic events.
+
+Two things there are load-bearing and easy to break:
+
+1. **The points overlay is a sibling of the viewport, not a descendant**
+   (so pins aren't double-transformed by the viewport's CSS transform).
+   Events targeting a pin therefore never bubble into the viewport's
+   bindings, which is why `MapEngine` binds the same handler set on
+   `.c-map-engine__points`. Both bind sites must share one recognizer
+   instance — a pinch can span the two elements.
+2. **Pointer capture is deferred until the pointer has moved ~4px.**
+   Capture retargets the compatibility mouse events, so capturing on
+   `pointerdown` sends a pin's `click` to the captured element and POI
+   taps stop working. Verified in a real browser, not inferred — jsdom
+   does not reproduce the retargeting.
+
+New input handling belongs in `useMapGestures`, not in a component.
 
 ### Selection
 

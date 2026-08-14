@@ -59,6 +59,7 @@ declare global {
   const useId: typeof import('vue').useId
   const useMapEngine: typeof import('../src/runtime/composables/useMapEngine').default
   const useMapFloor: typeof import('../src/runtime/composables/useMapFloor').default
+  const useMapGestures: typeof import('../src/runtime/composables/useMapGestures').default
   const useMapGroup: typeof import('../src/runtime/composables/useMapGroup').default
   const useMapLayer: typeof import('../src/runtime/composables/useMapLayer').default
   const useMapPoint: typeof import('../src/runtime/composables/useMapPoint').default

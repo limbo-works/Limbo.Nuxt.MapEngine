@@ -4,6 +4,25 @@ import { mount } from '@vue/test-utils';
 import MapEngine from '../../src/runtime/components/MapEngine.vue';
 import { makeEngine } from '../utils';
 
+// Only the two bind-site tests below need real events — test-utils' trigger()
+// can't set clientX/pointerId (getter-only on MouseEvent), and constructing
+// them is enough here since neither test depends on event timing.
+function firePointer(
+	target: Element,
+	type: string,
+	options: { pointerId?: number; clientX?: number; clientY?: number } = {}
+): void {
+	target.dispatchEvent(
+		new PointerEvent(type, {
+			bubbles: true,
+			cancelable: true,
+			pointerId: options.pointerId ?? 1,
+			clientX: options.clientX ?? 0,
+			clientY: options.clientY ?? 0,
+		})
+	);
+}
+
 describe('MapEngine', () => {
 	it('renders every visible layer', () => {
 		const { engine } = makeEngine();
@@ -61,23 +80,51 @@ describe('MapEngine', () => {
 	});
 
 	// The points layer is a sibling overlay above the viewport (not a
-	// descendant), so a wheel event over a pin wouldn't otherwise reach the
-	// viewport's own listener — regression test for that forwarding.
-	it('forwards wheel events from the points layer into the viewport', () => {
+	// descendant), so gestures starting on a pin never reach the viewport's
+	// own bindings — binding the recognizer here too is what makes dragging,
+	// pinching, and scroll-to-zoom work over a POI. What the recognizer then
+	// does with the input is covered in test/unit/useMapGestures.spec.ts.
+	it('drives the recognizer from the points layer', () => {
 		const { engine } = makeEngine();
 		const zoomBy = vi.spyOn(engine.viewport, 'zoomBy');
 		const wrapper = mount(MapEngine, { props: { engine } });
 
-		wrapper.find('.c-map-engine__points').element.dispatchEvent(
-			new WheelEvent('wheel', {
-				deltaY: -100,
-				deltaMode: 0,
-				clientX: 100,
-				clientY: 50,
-				cancelable: true,
-			})
-		);
+		wrapper
+			.find('.c-map-engine__points')
+			.element.dispatchEvent(
+				new WheelEvent('wheel', { deltaY: -100, cancelable: true })
+			);
 
 		expect(zoomBy).toHaveBeenCalledTimes(1);
+	});
+
+	// One recognizer instance across both bind sites: a two-finger pinch can
+	// land one finger on a pin and the other on bare map, and only a shared
+	// instance tracks those as a single gesture.
+	it('shares one recognizer across both bind sites', () => {
+		const { engine } = makeEngine();
+		const zoomTo = vi.spyOn(engine.viewport, 'zoomTo');
+		const wrapper = mount(MapEngine, { props: { engine } });
+
+		// One finger down on a pin, the other on bare map, then a spread
+		firePointer(
+			wrapper.find('.c-map-engine__points').element,
+			'pointerdown',
+			{
+				pointerId: 1,
+				clientX: 100,
+			}
+		);
+		firePointer(wrapper.find('.c-map-viewport').element, 'pointerdown', {
+			pointerId: 2,
+			clientX: 200,
+		});
+		firePointer(wrapper.find('.c-map-viewport').element, 'pointermove', {
+			pointerId: 2,
+			clientX: 250,
+		});
+
+		expect(zoomTo).toHaveBeenCalledTimes(1);
+		expect(zoomTo.mock.calls[0][1]).toBeCloseTo(1.5);
 	});
 });

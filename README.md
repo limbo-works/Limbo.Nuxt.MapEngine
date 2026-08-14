@@ -58,7 +58,8 @@ export default defineNuxtConfig({
 
 The module auto-imports the composables (`useMapEngine`, `useMapLayer`,
 `useMapPoint`, `useMapGroup`, `useMapFloor`, `useMapSprite`,
-`useMapUrlSync`) and auto-registers the components (`MapEngine`,
+`useMapGestures`, `useMapUrlSync`) and auto-registers the components
+(`MapEngine`,
 `MapViewport`, `MapLayer`, `MapPoint`). Types and the two exported utils
 come from the package entry:
 

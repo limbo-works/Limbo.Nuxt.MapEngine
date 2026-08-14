@@ -23,6 +23,7 @@ of every object, and the root `CLAUDE.md` describes the architecture.
 
 - [`useMapEngine`](./use-map-engine.md)
 - [`useMapViewport`](./use-map-viewport.md)
+- [`useMapGestures`](./use-map-gestures.md)
 - [`useMapLayer`](./use-map-layer.md)
 - [`useMapPoint`](./use-map-point.md)
 - [`useMapGroup`](./use-map-group.md)
@@ -55,6 +56,10 @@ playground's own content-overlay implementation, driven by
   a `reactive()` object. None of them are Vue `ref`-based composables in
   the usual Nuxt sense, and none use provide/inject — the engine object is
   passed down explicitly (`:engine="engine"`).
+  [`useMapGestures`](./use-map-gestures.md) is the one exception on both
+  counts: it takes an `IViewport` rather than an options object, and
+  returns a plain object rather than a `reactive()` one — it exposes
+  handlers and no reactive state.
 - Composables and components are auto-imported/auto-registered by the
   module; types are imported from the package entry
   (`import type { IEngine } from '@limbo-works/map-engine'`).
