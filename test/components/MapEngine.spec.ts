@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import MapEngine from '../../src/runtime/components/MapEngine.vue';
@@ -58,5 +58,26 @@ describe('MapEngine', () => {
 		expect(
 			wrapper.find('.c-map-engine__overlay .test-overlay').exists()
 		).toBe(true);
+	});
+
+	// The points layer is a sibling overlay above the viewport (not a
+	// descendant), so a wheel event over a pin wouldn't otherwise reach the
+	// viewport's own listener — regression test for that forwarding.
+	it('forwards wheel events from the points layer into the viewport', () => {
+		const { engine } = makeEngine();
+		const zoomBy = vi.spyOn(engine.viewport, 'zoomBy');
+		const wrapper = mount(MapEngine, { props: { engine } });
+
+		wrapper.find('.c-map-engine__points').element.dispatchEvent(
+			new WheelEvent('wheel', {
+				deltaY: -100,
+				deltaMode: 0,
+				clientX: 100,
+				clientY: 50,
+				cancelable: true,
+			})
+		);
+
+		expect(zoomBy).toHaveBeenCalledTimes(1);
 	});
 });

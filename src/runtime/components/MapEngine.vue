@@ -1,6 +1,6 @@
 <template>
 	<div class="c-map-engine">
-		<MapViewport :engine="engine">
+		<MapViewport ref="viewport" :engine="engine">
 			<div class="c-map-engine__layers">
 				<MapLayer
 					v-for="layer in engine.layers"
@@ -11,7 +11,7 @@
 			</div>
 		</MapViewport>
 
-		<div class="c-map-engine__points">
+		<div class="c-map-engine__points" @wheel.prevent="onPointsWheel">
 			<MapPoint
 				v-for="point in engine.points"
 				:key="point.id"
@@ -31,9 +31,19 @@
 </template>
 
 <script setup lang="ts">
+import { useTemplateRef } from 'vue';
 import type { IEngine } from '../types';
 
 defineProps<{ engine: IEngine }>();
+
+const viewport = useTemplateRef('viewport');
+
+// Re-enters the viewport's own wheel handling for a wheel event that
+// landed on the points overlay instead of the viewport itself — see the
+// comment on MapViewport's defineExpose.
+function onPointsWheel(event: WheelEvent) {
+	viewport.value?.onWheel(event);
+}
 </script>
 
 <style>

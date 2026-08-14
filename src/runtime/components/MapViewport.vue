@@ -360,6 +360,13 @@ function onGestureEnd(event: Event) {
 
 	gesture = null;
 }
+
+// The points layer renders as a sibling overlay above this element (so its
+// manually-positioned pins aren't double-transformed by the viewport's own
+// CSS transform) — a wheel event targeting a pin therefore never bubbles
+// into the @wheel listener below. MapEngine forwards those events here so
+// scroll-to-zoom keeps working while the cursor is over a pin.
+defineExpose({ onWheel });
 </script>
 
 <style>
