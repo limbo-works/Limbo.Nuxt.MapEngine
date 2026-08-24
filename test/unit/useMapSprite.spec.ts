@@ -40,6 +40,7 @@ describe('useMapSprite', () => {
 		expect(sprite.scaleFeather).toBe(1);
 		expect(sprite.scaleFactor).toBe(1);
 		expect(sprite.scaleOrigin).toBe('center');
+		expect(sprite.counterScaleFrom).toBeUndefined();
 	});
 
 	it('passes the scale behavior options through', () => {
@@ -50,6 +51,7 @@ describe('useMapSprite', () => {
 			scaleFeather: 0.5,
 			scaleFactor: 0.1,
 			scaleOrigin: '50% 100%',
+			counterScaleFrom: 4,
 		});
 
 		expect(sprite.minScale).toBe(2);
@@ -57,5 +59,6 @@ describe('useMapSprite', () => {
 		expect(sprite.scaleFeather).toBe(0.5);
 		expect(sprite.scaleFactor).toBe(0.1);
 		expect(sprite.scaleOrigin).toBe('50% 100%');
+		expect(sprite.counterScaleFrom).toBe(4);
 	});
 });

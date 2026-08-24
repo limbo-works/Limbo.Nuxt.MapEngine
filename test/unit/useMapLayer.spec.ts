@@ -66,6 +66,7 @@ describe('useMapLayer', () => {
 			scaleFeather: 2,
 			scaleFactor: 0.3,
 			scaleOrigin: '50% 100%',
+			counterScaleFrom: 4,
 		});
 
 		expect(layer.sprite.minScale).toBe(5);
@@ -73,5 +74,6 @@ describe('useMapLayer', () => {
 		expect(layer.sprite.scaleFeather).toBe(2);
 		expect(layer.sprite.scaleFactor).toBe(0.3);
 		expect(layer.sprite.scaleOrigin).toBe('50% 100%');
+		expect(layer.sprite.counterScaleFrom).toBe(4);
 	});
 });

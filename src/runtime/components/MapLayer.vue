@@ -9,6 +9,7 @@
 			:style="{
 				'--scale-factor': layer.sprite.scaleFactor,
 				'--scale-origin': layer.sprite.scaleOrigin,
+				'--counter-scale-from': layer.sprite.counterScaleFrom,
 			}"
 		></div>
 	</Transition>
@@ -31,8 +32,13 @@ const spriteStyles = `
 		width: 100%;
 		height: 100%;
 
+		/* --counter-scale-from clamps the viewport scale the counter-scale
+		   formula sees: below that scale --scale freezes, so the sprite's
+		   marks ride the map instead of growing relative to it as the user
+		   zooms further out. Unset (0) leaves the scale unclamped. */
 		--inverted-factor: (1 - var(--scale-factor, 0.6));
-		--muliplied-factor: var(--viewport-scale, 1) * var(--scale-factor, 0.6);
+		--muliplied-factor: max(var(--viewport-scale, 1), var(--counter-scale-from, 0)) *
+			var(--scale-factor, 0.6);
 		--scale: calc(var(--muliplied-factor) + var(--inverted-factor));
 
 		& [stroke] {
@@ -59,7 +65,8 @@ const spriteStyles = `
 
 		& [data-scale-factor] {
 			--inverted-factor: (1 - var(--scale-factor, 0.6));
-			--muliplied-factor: var(--viewport-scale, 1) * var(--scale-factor, 0.6);
+			--muliplied-factor: max(var(--viewport-scale, 1), var(--counter-scale-from, 0)) *
+				var(--scale-factor, 0.6);
 			--scale: calc(var(--muliplied-factor) + var(--inverted-factor));
 		}
 	}

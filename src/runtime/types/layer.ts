@@ -44,4 +44,5 @@ export interface ILayerOptions {
 	scaleFeather?: number;
 	scaleFactor?: number;
 	scaleOrigin?: string;
+	counterScaleFrom?: number;
 }
