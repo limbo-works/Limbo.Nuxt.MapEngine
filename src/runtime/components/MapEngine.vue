@@ -24,7 +24,10 @@
 			</MapPoint>
 		</div>
 
-		<div class="c-map-engine__overlay">
+		<!-- Zoom input over the UI overlay would otherwise fall through to the
+		     browser's page zoom (sibling of the gesture bind sites, so the
+		     recognizer never sees it) — see overlayHandlers. -->
+		<div class="c-map-engine__overlay" v-on="gestures.overlayHandlers">
 			<slot name="overlay"></slot>
 		</div>
 	</div>
@@ -64,6 +67,11 @@ defineProps<{ engine: IEngine }>();
 		height: 100%;
 		z-index: 2;
 		pointer-events: none;
+
+		/* overlayHandlers carries no pointer handlers (buttons, scrollers and
+		   sheet drags keep native behavior), so a touch pinch starting on an
+		   overlay control must be blocked here or the browser zooms the page. */
+		touch-action: pan-x pan-y;
 	}
 }
 </style>
