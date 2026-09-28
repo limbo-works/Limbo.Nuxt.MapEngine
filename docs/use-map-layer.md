@@ -26,6 +26,7 @@ layers on your behalf.
 | `scaleFeather` | `number`    | `1`         | Forwarded to `useMapSprite` — the fade transition width around `minScale`/`maxScale`.                                                                                                                                                                                   |
 | `scaleFactor`  | `number`    | `1`         | Forwarded to `useMapSprite` — how strongly this layer's stroke widths/markers counter-scale against zoom (`0` = fully counter-scaled/constant screen size, `1` = scales with the map).                                                                                  |
 | `scaleOrigin`  | `string`    | `'center'`  | Forwarded to `useMapSprite` — the `transform-origin` used by this layer's `scale_` elements when counter-scaling (see [`useMapSprite`](./use-map-sprite.md#options-ispriteoptions)). Individual elements can override this via `data-scale-origin` directly in the SVG. |
+| `counterScaleFrom` | `number` | `undefined` | Forwarded to `useMapSprite` — the viewport scale where this layer's counter-scaling starts; zoomed out past it, the layer's marks scale with the map instead of growing relative to it (see [`useMapSprite`](./use-map-sprite.md)). |
 
 ## Runtime-only fields (not options)
 

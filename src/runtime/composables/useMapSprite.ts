@@ -21,5 +21,6 @@ export default (options: ISpriteOptions): ISprite => {
 		scaleFeather: options.scaleFeather ?? 1,
 		scaleFactor: options.scaleFactor ?? 1,
 		scaleOrigin: options.scaleOrigin ?? 'center',
+		counterScaleFrom: options.counterScaleFrom,
 	};
 };

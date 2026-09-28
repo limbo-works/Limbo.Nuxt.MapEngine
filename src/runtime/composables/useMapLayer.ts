@@ -10,6 +10,7 @@ export default (options: ILayerOptions): ILayer => {
 		scaleFeather: options.scaleFeather,
 		scaleFactor: options.scaleFactor,
 		scaleOrigin: options.scaleOrigin,
+		counterScaleFrom: options.counterScaleFrom,
 	});
 
 	// Building highlights have no label (they're not user-toggleable pills)

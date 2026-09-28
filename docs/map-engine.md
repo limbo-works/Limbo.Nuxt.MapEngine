@@ -41,6 +41,20 @@ ref and `IEngineOptions.onActivatePoint` (see
   regions pass pans through to the map; direct children of the overlay
   slot get `pointer-events: auto` back.
 
+## Input
+
+This component creates the [`useMapGestures`](./use-map-gestures.md)
+recognizer and binds it in two places: it passes the instance to
+[`<MapViewport>`](./map-viewport.md), and binds the same handler set on
+`c-map-engine__points`. Pins are `pointer-events: auto` inside an
+otherwise pass-through overlay that is a _sibling_ of the viewport rather
+than a descendant, so without the second bind site no gesture starting on
+a pin would reach the recognizer at all — dragging, pinching, and
+scroll-to-zoom over a POI would do nothing.
+
+Both sites drive one shared instance, so a two-finger pinch with one
+finger on a pin and the other on bare map tracks as a single gesture.
+
 ## CSS hooks
 
 Root `class="c-map-engine"` (position: relative, `overflow: clip`,

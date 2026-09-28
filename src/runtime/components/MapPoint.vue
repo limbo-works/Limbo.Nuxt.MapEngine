@@ -115,6 +115,12 @@ function setPosition() {
 	   to the map — re-enable them on the points themselves */
 	pointer-events: auto;
 
+	/* Points are tap-only (no pan/scroll of their own) and sit outside the
+	   viewport's own DOM subtree (see MapEngine's layout), so without this
+	   a pinch or drag starting on a pin falls through to the browser's
+	   native gesture handling instead of the viewport's. */
+	touch-action: none;
+
 	transform-origin: calc(var(--anchor-x, 0.5) * 100%)
 		calc(var(--anchor-y, 1) * 100%);
 }

@@ -1,6 +1,7 @@
 export * from './engine';
 export * from './floor';
 export * from './geometry';
+export * from './gestures';
 export * from './group';
 export * from './sprite';
 export * from './layer';
